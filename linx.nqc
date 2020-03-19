@@ -1,0 +1,92 @@
+#define SPEED 7
+
+int direction;
+int count;
+
+
+task main
+{
+    Off(OUT_L+OUT_R);
+    StopAllTasks();
+}
+
+task vor
+{
+  stop zruck;
+  SensorMode(IN_L, SMODE_BOOL);
+  SensorMode(IN_R, SMODE_BOOL);
+  ClearTimer(1);
+  while(Timer(1) < 200)
+  {
+  	Drive(SPEED,SPEED);
+  	Sleep(50);
+  	if(IN_L == 1)
+  	{
+    	    Off(OUT_L+OUT_R);
+    	    StopAllTasks();
+  	}
+  	if(IN_R == 1)
+  	{
+	    Off(OUT_L+OUT_R);
+	    StopAllTasks();
+  	}
+  }  
+  start main;
+}
+
+task zruck
+{
+  stop vor;
+  SensorMode(IN_L, SMODE_BOOL);
+  SensorMode(IN_R, SMODE_BOOL);
+  ClearTimer(1);
+  while(Timer(1) < 200)
+  {
+  	Drive(-SPEED,-SPEED);
+  	Sleep(50);
+  	if(IN_L == 1)
+  	{
+    	    Off(OUT_L+OUT_R);
+    	    StopAllTasks();
+  	}
+  	if(IN_R == 1)
+  	{
+	    Off(OUT_L+OUT_R);
+	    StopAllTasks();
+  	}
+  }  
+  start main;
+}
+
+
+task ctrlRotate
+{
+	SensorMode(IN_M, SMODE_BOOL);
+	if(direction==1)
+	{
+		Fwd(OUT_X, 1);
+		count = count + 1;
+	}
+		
+	if(direction==-1)
+	{
+		Rev(OUT_X, 1);
+		count = count + 1;
+	}	
+	
+	
+	if (count == 1)
+	{
+		Sleep(12);
+	}
+	
+	if (count == 2)
+	{
+		while(IN_M != 1){}
+		direction = -direction;
+		count = 0;
+	}
+			
+	Off(OUT_X);
+}
+
